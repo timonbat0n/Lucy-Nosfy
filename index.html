@@ -6,6 +6,21 @@
     <title>Lucy Nosfi | Lavender Bloom Art</title>
     <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@900&family=Playfair+Display:ital,wght@1,900&family=Inter:wght@800&display=swap" rel="stylesheet">
    <style>
+
+
+::-webkit-scrollbar {
+    width: 6px;
+}
+::-webkit-scrollbar-track {
+    background: var(--black);
+}
+::-webkit-scrollbar-thumb {
+    background: var(--lavender);
+    border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: #967bb6;
+}
         :root {
             --white: #ffffff;
             --black: #0a0a0a;
@@ -213,6 +228,48 @@
             .portfolio-grid, .steps-grid { grid-template-columns: 1fr; }
             .corner-label { display: none; }
         }
+
+        .glitch-overlay {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyBAMAAADsEZWCAAAAElBMVEUAAAD8/Pz09PT4+PjMzMz////8isYfAAAABnRSTlMAAAAAAABupgeRAAAANklEQVQ4y2NgQAX8DIzwSByMg7GJmIDYpEwgNgWIDWIDscGZIDY6E5SNDpSNDuSNDpSNDuSNDgAlwwf38asY6gAAAABJRU5ErkJggg==');
+    opacity: 0.03;
+    pointer-events: none;
+    z-index: 9998;
+}
+
+/* В стили */
+.rgb-parent {
+    position: relative;
+    display: inline-block;
+}
+
+.rgb-layer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    mix-blend-mode: screen; /* Смешивание цветов */
+    transition: transform 0.1s ease-out;
+    display: block;
+}
+
+/* Красный слой */
+.rgb-layer.red {
+    color: #ff0000;
+    z-index: 1;
+    opacity: 0.7;
+}
+
+/* Синий слой */
+.rgb-layer.blue {
+    color: #0000ff;
+    z-index: 2;
+    opacity: 0.7;
+}
     </style>
 </head>
 <body>
@@ -227,7 +284,11 @@
 
     <div class="main-stage">
         <div class="typography-bg">
-            <h1 class="first-name">ЛЮСИ</h1>
+           <h1 class="first-name rgb-parent" data-text="ЛЮСИ">
+    <span class="rgb-layer red">ЛЮСИ</span>
+    <span class="rgb-layer blue">ЛЮСИ</span>
+    ЛЮСИ
+</h1>
             <h1 class="last-name">Носфи</h1>
         </div>
 
@@ -336,7 +397,7 @@
     </div>
 </section>
 <div class="custom-cursor"></div>
-
+<div class="glitch-overlay"></div>
 <script>
 const cursor = document.querySelector('.custom-cursor');
         const isTouch = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
@@ -386,8 +447,51 @@ const cursor = document.querySelector('.custom-cursor');
                     video.pause();
                     playBtn.innerHTML = '<svg width="12" height="12" viewBox="0 0 14 18" fill="black"><path d="M0 0V18L14 9L0 0Z"/></svg>';
                 });
+                
+                const parent = document.querySelector('.rgb-parent');
+const redLayer = document.querySelector('.rgb-layer.red');
+const blueLayer = document.querySelector('.rgb-layer.blue');
+
+if (parent && !isTouchDevice) {
+    document.addEventListener('mousemove', (e) => {
+        const { clientX, clientY } = e;
+        const rect = parent.getBoundingClientRect();
+        
+        // Центр текста
+        const centerX = rect.left + rect.width / 2;
+        const centerY = rect.top + rect.height / 2;
+
+        // Вычисляем дистанцию (чем дальше мышь, тем сильнее расслоение)
+        const deltaX = (clientX - centerX) / 15;
+        const deltaY = (clientY - centerY) / 15;
+
+        // Двигаем слои в разные стороны
+        requestAnimationFrame(() => {
+            redLayer.style.transform = `translate(${deltaX}px, ${deltaY}px)`;
+            blueLayer.style.transform = `translate(${-deltaX}px, ${-deltaY}px)`;
+        });
+    });
+
+    // Возвращаем слои на место, когда мышь уходит
+    parent.addEventListener('mouseleave', () => {
+        redLayer.style.transform = `translate(0, 0)`;
+        blueLayer.style.transform = `translate(0, 0)`;
+    });
+}
             }
         });
+
+        window.addEventListener('scroll', () => {
+    const scrolled = window.pageYOffset;
+    const photo = document.querySelector('.about-photo-placeholder img');
+    if(photo) {
+        // Фото медленно увеличивается при скролле
+        photo.style.transform = `scale(${1 + scrolled * 0.0005})`;
+        
+    }
+});
+
+
 </script>
 </body>
 </html>
