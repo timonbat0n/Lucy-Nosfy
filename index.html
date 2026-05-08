@@ -5,41 +5,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lucy Nosfi | Lavender Bloom Art</title>
     <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@900&family=Playfair+Display:ital,wght@1,900&family=Inter:wght@800&display=swap" rel="stylesheet">
-    <style>
-
-        /* Скрываем стандартный курсор для всей страницы */
-html, body {
-    cursor: none;
-}
-
-/* Важно: если есть ссылки или кнопки, им тоже ставим cursor: none */
-a, button, .photo-overlay-container, .about-photo-placeholder, .step-card {
-    cursor: none !important;
-}
-
-/* Стили для нашего кастомного курсора */
-.custom-cursor {
-    width: 20px;
-    height: 20px;
-    background: var(--lavender);
-    border-radius: 50%;
-    position: fixed;
-    pointer-events: none; /* Чтобы курсор не мешал кликать по кнопкам */
-    z-index: 9999;
-    mix-blend-mode: difference;
-    transition: transform 0.2s ease, background-color 0.2s ease;
-    transform: translate(-50%, -50%); /* Центрируем кружок относительно острия мыши */
-}
-
-/* Эффект при наведении на кликабельные элементы */
-.custom-cursor.active {
-    transform: translate(-50%, -50%) scale(3); /* Круг расширяется */
-    background-color: var(--white);
-}
+   <style>
         :root {
             --white: #ffffff;
             --black: #0a0a0a;
             --lavender: #b19cd9;
+            --dark-grey: #151515;
+        }
+
+        /* --- КУРСОР И БАЗОВЫЕ НАСТРОЙКИ --- */
+        * { box-sizing: border-box; }
+
+        @media (pointer: fine) {
+            html, body { cursor: none; }
+            a, button, .photo-overlay-container, .step-card, .video-card, .about-photo-placeholder {
+                cursor: none !important;
+            }
         }
 
         body {
@@ -50,14 +31,32 @@ a, button, .photo-overlay-container, .about-photo-placeholder, .step-card {
             overflow-x: hidden;
         }
 
-        /* Лавандовый блюм на фоне первого экрана */
+        .custom-cursor {
+            width: 20px;
+            height: 20px;
+            background: var(--lavender);
+            border-radius: 50%;
+            position: fixed;
+            pointer-events: none;
+            z-index: 9999;
+            mix-blend-mode: difference;
+            transition: transform 0.2s ease;
+            transform: translate(-50%, -50%);
+            display: none;
+        }
+
+        @media (pointer: fine) { .custom-cursor { display: block; } }
+
+        .custom-cursor.active { transform: translate(-50%, -50%) scale(3); }
+
+        /* --- ФОНОВЫЕ ЭФФЕКТЫ --- */
         .bloom-container {
-            position: fixed; /* Фиксируем, чтобы был только на старте */
+            position: fixed;
             top: 0; left: 0;
             width: 100%; height: 100%;
             z-index: 0;
             filter: blur(120px);
-            opacity: 0.6;
+            opacity: 0.5;
             pointer-events: none;
         }
 
@@ -67,17 +66,15 @@ a, button, .photo-overlay-container, .about-photo-placeholder, .step-card {
             border-radius: 50%;
             animation: move 15s infinite alternate ease-in-out;
         }
-
         .bloom-1 { width: 40vw; height: 40vw; top: -10%; left: -10%; background: #7b2cbf; }
         .bloom-2 { width: 50vw; height: 50vw; bottom: -20%; right: -10%; animation-duration: 20s; }
 
         @keyframes move {
             0% { transform: translate(0, 0) scale(1); }
-            50% { transform: translate(10vw, 5vh) scale(1.1); }
-            100% { transform: translate(-5vw, 15vh) scale(0.9); }
+            100% { transform: translate(5vw, 10vh) scale(1.1); }
         }
 
-        /* Первый экран */
+        /* --- ГЛАВНЫЙ ЭКРАН --- */
         .main-stage {
             position: relative;
             z-index: 5;
@@ -94,411 +91,128 @@ a, button, .photo-overlay-container, .about-photo-placeholder, .step-card {
             width: 100%;
         }
 
-        .first-name {
-            font-family: 'Unbounded', sans-serif;
-            font-size: 15vw;
-            line-height: 0.8;
-            margin: 0;
-            text-transform: uppercase;
-        }
-
-        .last-name {
-            font-family: 'Playfair Display', serif;
-            font-style: italic;
-            font-size: 16vw;
-            line-height: 0.8;
-            display: block;
-            color: transparent;
-            -webkit-text-stroke: 1.5px var(--white);
-            margin-top: -2vw;
+        .first-name { font-family: 'Unbounded', sans-serif; font-size: 15vw; line-height: 0.8; margin: 0; text-transform: uppercase; }
+        .last-name { 
+            font-family: 'Playfair Display', serif; font-style: italic; font-size: 16vw; 
+            line-height: 0.8; display: block; color: transparent; 
+            -webkit-text-stroke: 1.5px var(--white); margin-top: -2vw; 
         }
 
         .photo-overlay-container {
             position: relative;
             z-index: 10;
             width: 28vw;
-            height: 42vw;
-            cursor: pointer;
+            height: 40vw;
         }
 
         .avatar {
             position: absolute;
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-            transition: all 0.6s cubic-bezier(0.19, 1, 0.22, 1);
+            width: 100%; height: 100%;
+            object-fit: cover;
+            transition: all 0.8s cubic-bezier(0.19, 1, 0.22, 1);
         }
-
         .photo2 { opacity: 0; transform: scale(0.9) rotate(5deg); }
-
-        .photo-overlay-container:hover .photo1 { opacity: 0; transform: translateY(-20px) scale(1.05); }
+        .photo-overlay-container:hover .photo1 { opacity: 0; transform: translateY(-20px); }
         .photo-overlay-container:hover .photo2 { opacity: 1; transform: scale(1.1) rotate(0); }
 
         .footer-tag {
             position: absolute;
-            bottom: -15%;
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: 1rem;
-            text-transform: uppercase;
-            letter-spacing: 0.6em;
-            background: rgba(10, 10, 10, 0.8);
-            backdrop-filter: blur(5px);
-            padding: 8px 25px;
-            white-space: nowrap;
+            bottom: -10%; left: 50%; transform: translateX(-50%);
+            font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.5em;
+            background: rgba(10, 10, 10, 0.8); backdrop-filter: blur(10px);
+            padding: 10px 20px; white-space: nowrap;
         }
 
         .corner-label {
-            position: fixed; /* ЧтобыLabels были всегда видны на первом экране */
-            z-index: 20;
-            font-size: 0.7rem;
-            letter-spacing: 3px;
-            text-transform: uppercase;
-            opacity: 0.7;
+            position: fixed; z-index: 20; font-size: 0.7rem; letter-spacing: 3px; 
+            text-transform: uppercase; opacity: 0.5;
         }
         .top-left { top: 30px; left: 30px; }
         .bottom-right { bottom: 30px; right: 30px; }
 
-        /* БЛОК ОБ О СЕБЕ (СНИЗУ) */
+        /* --- ОБ АВТОРЕ --- */
         .about-section {
-            position: relative;
-            z-index: 100; /* Наползает поверх первого экрана */
-            background: var(--black);
-            padding: 150px 5%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-height: 100vh;
-            box-shadow: 0 -50px 100px rgba(0,0,0,0.8);
+            position: relative; z-index: 100; background: var(--black);
+            padding: 150px 5%; display: flex; flex-direction: column; align-items: center;
         }
-
-        .about-photo-wrapper {
-            position: relative;
-            width: 100%;
-            max-width: 900px;
-            margin-bottom: 60px;
-        }
-
         .about-photo-placeholder {
-            width: 100%;
-            aspect-ratio: 16/9;
-            background: #151515;
-            overflow: hidden;
-            border: 1px solid rgba(177, 156, 217, 0.2);
+            width: 100%; max-width: 900px; aspect-ratio: 16/9; background: var(--dark-grey);
+            overflow: hidden; border: 1px solid rgba(177, 156, 217, 0.2); margin-bottom: 60px;
+        }
+        .about-photo-placeholder img { width: 100%; height: 100%; object-fit: cover; transition: 1.2s ease; }
+        .about-photo-placeholder:hover img { transform: scale(1.05); }
+
+        .about-title { font-family: 'Unbounded', sans-serif; font-size: clamp(2.5rem, 6vw, 5rem); margin-bottom: 30px; text-align: center; }
+        .about-title span { font-family: 'Playfair Display', serif; font-style: italic; color: var(--lavender); }
+        .about-description { font-size: 1.2rem; line-height: 1.6; color: rgba(255,255,255,0.7); max-width: 800px; text-align: center; font-weight: 300; }
+
+        /* --- ЭТАПЫ РАБОТЫ --- */
+        .steps-section { padding: 100px 0; background: var(--black); overflow: hidden; }
+        .marquee-container {
+            background: var(--lavender); color: var(--black); padding: 15px 0;
+            transform: rotate(-1deg); width: 110%; margin-left: -5%; margin-bottom: 80px;
+        }
+        .marquee-text {
+            font-family: 'Unbounded', sans-serif; font-size: 1.5rem; white-space: nowrap;
+            display: inline-block; animation: marquee 20s linear infinite;
+        }
+        @keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+
+        .steps-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px; padding: 0 5%; max-width: 1400px; margin: 0 auto;
+        }
+        .step-card {
+            background: #111; padding: 40px; border: 1px solid rgba(255,255,255,0.05);
+            transition: 0.4s; position: relative;
+        }
+        .step-card:hover { border-color: var(--lavender); transform: translateY(-10px); }
+        .step-number { 
+            position: absolute; top: 20px; right: 20px; font-family: 'Playfair Display'; 
+            font-size: 3rem; color: var(--lavender); opacity: 0.2; 
         }
 
-        .about-photo-placeholder img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            filter: contrast(1.1) brightness(0.9);
-            transition: 0.8s ease;
+        /* --- ПОРТФОЛИО --- */
+        .portfolio-section { padding: 100px 5%; background: var(--black); }
+        .portfolio-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 40px; max-width: 1400px; margin: 0 auto;
         }
+        .video-card { background: #0f0f0f; border: 1px solid rgba(255,255,255,0.05); transition: 0.5s; }
+        .video-card:hover { border-color: var(--lavender); }
+        .video-wrapper { position: relative; width: 100%; aspect-ratio: 9/16; background: #000; overflow: hidden; }
+        
+        /* Для обычного видео */
+        video { width: 100%; height: 100%; object-fit: cover; }
+        
+        /* Для Iframe (VK Clips) */
+        .video-wrapper iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
 
-        .about-photo-placeholder:hover img {
-            transform: scale(1.02);
-            filter: contrast(1) brightness(1);
+        .video-controls {
+            position: absolute; bottom: 0; left: 0; width: 100%; padding: 20px;
+            background: linear-gradient(transparent, rgba(0,0,0,0.8));
+            display: flex; align-items: center; gap: 15px; opacity: 0; transition: 0.3s;
         }
-
-        .about-text-block {
-            width: 100%;
-            max-width: 900px;
-            text-align: center;
+        .video-card:hover .video-controls { opacity: 1; }
+        .play-btn { 
+            background: var(--lavender); border: none; width: 40px; height: 40px; 
+            border-radius: 50%; display: flex; align-items: center; justify-content: center; 
         }
+        .progress-bar { flex-grow: 1; height: 2px; background: rgba(255,255,255,0.2); }
+        .progress-fill { height: 100%; background: var(--lavender); width: 0; }
+        .video-info { padding: 20px; }
+        .video-category { color: var(--lavender); font-size: 0.7rem; letter-spacing: 2px; text-transform: uppercase; }
 
-        .about-title {
-            font-family: 'Unbounded', sans-serif;
-            font-size: clamp(2.5rem, 8vw, 5rem);
-            text-transform: uppercase;
-            margin-bottom: 30px;
-            line-height: 1;
-        }
-
-        .about-title span {
-            font-family: 'Playfair Display', serif;
-            font-style: italic;
-            color: var(--lavender);
-            text-transform: none;
-        }
-
-        .about-description {
-            font-size: clamp(1.1rem, 2vw, 1.4rem);
-            line-height: 1.6;
-            font-weight: 300;
-            color: rgba(255, 255, 255, 0.7);
-            max-width: 800px;
-            margin: 0 auto;
-        }
-
-        .about-watermark {
-            position: absolute;
-            bottom: 5%;
-            left: 50%;
-            transform: translateX(-50%);
-            font-family: 'Unbounded', sans-serif;
-            font-size: 25vw;
-            color: rgba(177, 156, 217, 0.05);
-            z-index: -1;
-            pointer-events: none;
-        }
-
-        /* Адаптив для мобилок */
+        /* --- МОБИЛЬНАЯ АДАПТАЦИЯ --- */
         @media (max-width: 768px) {
-            .photo-overlay-container { width: 70vw; height: 100vw; }
+            .main-stage { height: 85vh; }
             .first-name { font-size: 20vw; }
             .last-name { font-size: 22vw; }
-            .about-section { padding: 80px 5%; }
+            .photo-overlay-container { width: 70vw; height: 100vw; }
+            .about-title { font-size: 2rem; }
+            .portfolio-grid, .steps-grid { grid-template-columns: 1fr; }
+            .corner-label { display: none; }
         }
-
-        /* Блок ЭТАПЫ РАБОТЫ */
-.steps-section {
-    position: relative;
-    background: var(--black);
-    padding: 100px 0;
-    overflow: hidden;
-    z-index: 110;
-}
-
-/* Бегущая строка (Marquee) */
-.marquee-container {
-    background: var(--lavender);
-    color: var(--black);
-    padding: 20px 0;
-    transform: rotate(-2deg); /* Небольшой наклон для дерзости */
-    width: 110%;
-    margin-left: -5%;
-    margin-bottom: 80px;
-}
-
-.marquee-text {
-    font-family: 'Unbounded', sans-serif;
-    font-size: 2rem;
-    font-weight: 900;
-    white-space: nowrap;
-    display: inline-block;
-    animation: marquee 20s linear infinite;
-}
-
-@keyframes marquee {
-    0% { transform: translateX(0); }
-    100% { transform: translateX(-50%); }
-}
-
-/* Сетка этапов */
-.steps-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 20px;
-    padding: 0 5%;
-    max-width: 1400px;
-    margin: 0 auto;
-}
-
-.step-card {
-    background: #111;
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    padding: 40px;
-    position: relative;
-    transition: 0.4s cubic-bezier(0.23, 1, 0.32, 1);
-    cursor: default;
-}
-
-.step-card:hover {
-    background: #1a1a1a;
-    border-color: var(--lavender);
-    transform: translateY(-10px);
-}
-
-.step-number {
-    font-family: 'Playfair Display', serif;
-    font-style: italic;
-    font-size: 4rem;
-    color: var(--lavender);
-    opacity: 0.3;
-    position: absolute;
-    top: 10px;
-    right: 20px;
-}
-
-.step-title {
-    font-family: 'Unbounded', sans-serif;
-    font-size: 1.2rem;
-    margin-bottom: 20px;
-    text-transform: uppercase;
-}
-
-.step-desc {
-    font-size: 0.9rem;
-    line-height: 1.6;
-    color: rgba(255, 255, 255, 0.5);
-    font-weight: 300;
-}
-
-/* Линия-разделитель в стиле Timeline */
-.timeline-line {
-    width: 90%;
-    height: 1px;
-    background: linear-gradient(90deg, transparent, var(--lavender), transparent);
-    margin: 60px auto 0;
-    opacity: 0.3;
-}
-
-/* Блок Портфолио */
-.portfolio-section {
-    background: var(--black);
-    padding: 100px 5%;
-    z-index: 120;
-    position: relative;
-}
-
-.portfolio-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 40px;
-    max-width: 1400px;
-    margin: 0 auto;
-}
-
-/* Кастомный контейнер плеера */
-.video-card {
-    position: relative;
-    background: #0f0f0f;
-    border: 1px solid rgba(177, 156, 217, 0.1);
-    overflow: hidden;
-    transition: 0.5s cubic-bezier(0.2, 1, 0.3, 1);
-}
-
-.video-card:hover {
-    border-color: var(--lavender);
-    transform: translateY(-10px);
-}
-
-/* Обертка для самого видео */
-.video-wrapper {
-    position: relative;
-    width: 100%;
-    aspect-ratio: 9/16; /* Формат Reels */
-    background: #000;
-}
-
-video {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    cursor: none; /* Чтобы наш лавандовый курсор работал */
-}
-
-/* Кастомные контроллеры (появляются при наведении) */
-.video-controls {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    padding: 20px;
-    background: linear-gradient(transparent, rgba(0,0,0,0.8));
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    opacity: 0;
-    transition: 0.3s;
-    z-index: 5;
-}
-
-.video-card:hover .video-controls {
-    opacity: 1;
-}
-
-/* Кнопка Play/Pause */
-.play-btn {
-    background: var(--lavender);
-    border: none;
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: none;
-    transition: 0.3s;
-}
-
-.play-btn:hover {
-    transform: scale(1.1);
-    background: var(--white);
-}
-
-/* Полоса прогресса */
-.progress-bar {
-    flex-grow: 1;
-    height: 2px;
-    background: rgba(255,255,255,0.2);
-    position: relative;
-}
-
-.progress-fill {
-    height: 100%;
-    background: var(--lavender);
-    width: 0%;
-}
-
-.video-info {
-    padding: 20px;
-}
-
-.video-category {
-    font-size: 0.7rem;
-    color: var(--lavender);
-    text-transform: uppercase;
-    letter-spacing: 2px;
-}
-
-.video-name {
-    font-family: 'Unbounded', sans-serif;
-    font-size: 1rem;
-    margin-top: 5px;
-}
-
-
-/* Контейнер для ВК Клипа */
-.video-card.iframe-style {
-    border: 1px solid rgba(177, 156, 217, 0.15);
-    background: #000;
-}
-
-.video-wrapper.iframe-mode {
-    position: relative;
-    width: 100%;
-    /* Фиксируем соотношение сторон под Reels */
-    aspect-ratio: 9/16; 
-    overflow: hidden;
-}
-
-.video-wrapper.iframe-mode iframe {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    border: none;
-    /* Убираем лишние зазоры */
-    display: block;
-}
-
-/* Декоративная маска сверху (опционально) */
-/* Она добавит легкий лавандовый отсвет по краям, чтобы "подружить" видео с сайтом */
-.video-wrapper.iframe-mode::after {
-    content: '';
-    position: absolute;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    box-shadow: inset 0 0 40px rgba(177, 156, 217, 0.1);
-    pointer-events: none; /* Чтобы можно было нажать на Play в самом ВК */
-}
-
-.video-info {
-    padding: 25px;
-    border-top: 1px solid rgba(255, 255, 255, 0.05);
-}
     </style>
 </head>
 <body>
@@ -624,59 +338,56 @@ video {
 <div class="custom-cursor"></div>
 
 <script>
-   const cursor = document.querySelector('.custom-cursor');
+const cursor = document.querySelector('.custom-cursor');
+        const isTouch = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
 
-document.addEventListener('mousemove', (e) => {
-    // Используем requestAnimationFrame для идеальной плавности
-    requestAnimationFrame(() => {
-        cursor.style.left = e.clientX + 'px';
-        cursor.style.top = e.clientY + 'px';
-    });
-});
+        // КУРСОР
+        if (!isTouch) {
+            document.addEventListener('mousemove', (e) => {
+                requestAnimationFrame(() => {
+                    cursor.style.left = e.clientX + 'px';
+                    cursor.style.top = e.clientY + 'px';
+                });
+            });
 
-// Добавляем реакцию на ссылки и интерактивные объекты
-const links = document.querySelectorAll('a, button, .photo-overlay-container, .step-card, .about-photo-placeholder');
-
-links.forEach(link => {
-    link.addEventListener('mouseenter', () => {
-        cursor.classList.add('active');
-    });
-    link.addEventListener('mouseleave', () => {
-        cursor.classList.remove('active');
-    });
-});
-
-document.querySelectorAll('.video-card').forEach(card => {
-    const video = card.querySelector('.custom-video');
-    const playBtn = card.querySelector('.play-btn');
-    const progressFill = card.querySelector('.progress-fill');
-
-    // Функция воспроизведения/паузы
-    const togglePlay = () => {
-        if (video.paused) {
-            video.play();
-            playBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 14 14" fill="black"><rect width="4" height="14"/><rect x="10" width="4" height="14"/></svg>';
-        } else {
-            video.pause();
-            playBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 14 18" fill="black"><path d="M0 0V18L14 9L0 0Z"/></svg>';
+            const interactive = document.querySelectorAll('a, button, .photo-overlay-container, .step-card, .video-card, .about-photo-placeholder');
+            interactive.forEach(el => {
+                el.addEventListener('mouseenter', () => cursor.classList.add('active'));
+                el.addEventListener('mouseleave', () => cursor.classList.remove('active'));
+            });
         }
-    };
 
-    playBtn.addEventListener('click', togglePlay);
-    video.addEventListener('click', togglePlay);
+        // ЛОГИКА ВИДЕО
+        document.querySelectorAll('.video-card').forEach(card => {
+            const video = card.querySelector('.custom-video');
+            if (!video) return;
 
-    // Обновление полоски прогресса
-    video.addEventListener('timeupdate', () => {
-        const percent = (video.currentTime / video.duration) * 100;
-        progressFill.style.width = `${percent}%`;
-    });
+            const playBtn = card.querySelector('.play-btn');
+            const progress = card.querySelector('.progress-fill');
 
-    // Остановка при уходе курсора (опционально, чтобы не шумело)
-    card.addEventListener('mouseleave', () => {
-        video.pause();
-        playBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 14 18" fill="black"><path d="M0 0V18L14 9L0 0Z"/></svg>';
-    });
-});
+            const toggle = () => {
+                if (video.paused) {
+                    video.play();
+                    playBtn.innerHTML = '<svg width="12" height="12" viewBox="0 0 14 14" fill="black"><rect width="4" height="14"/><rect x="10" width="4" height="14"/></svg>';
+                } else {
+                    video.pause();
+                    playBtn.innerHTML = '<svg width="12" height="12" viewBox="0 0 14 18" fill="black"><path d="M0 0V18L14 9L0 0Z"/></svg>';
+                }
+            };
+
+            playBtn.addEventListener('click', (e) => { e.stopPropagation(); toggle(); });
+            video.addEventListener('click', toggle);
+            video.addEventListener('timeupdate', () => {
+                progress.style.width = (video.currentTime / video.duration) * 100 + '%';
+            });
+            
+            if (!isTouch) {
+                card.addEventListener('mouseleave', () => {
+                    video.pause();
+                    playBtn.innerHTML = '<svg width="12" height="12" viewBox="0 0 14 18" fill="black"><path d="M0 0V18L14 9L0 0Z"/></svg>';
+                });
+            }
+        });
 </script>
 </body>
 </html>
