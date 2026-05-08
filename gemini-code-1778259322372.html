@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lucy Nosfi | Lavender Bloom Art</title>
+    <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@900&family=Playfair+Display:ital,wght@1,900&family=Inter:wght@800&display=swap" rel="stylesheet">
+    <style>
+
+        /* Скрываем стандартный курсор для всей страницы */
+html, body {
+    cursor: none;
+}
+
+/* Важно: если есть ссылки или кнопки, им тоже ставим cursor: none */
+a, button, .photo-overlay-container, .about-photo-placeholder, .step-card {
+    cursor: none !important;
+}
+
+/* Стили для нашего кастомного курсора */
+.custom-cursor {
+    width: 20px;
+    height: 20px;
+    background: var(--lavender);
+    border-radius: 50%;
+    position: fixed;
+    pointer-events: none; /* Чтобы курсор не мешал кликать по кнопкам */
+    z-index: 9999;
+    mix-blend-mode: difference;
+    transition: transform 0.2s ease, background-color 0.2s ease;
+    transform: translate(-50%, -50%); /* Центрируем кружок относительно острия мыши */
+}
+
+/* Эффект при наведении на кликабельные элементы */
+.custom-cursor.active {
+    transform: translate(-50%, -50%) scale(3); /* Круг расширяется */
+    background-color: var(--white);
+}
+        :root {
+            --white: #ffffff;
+            --black: #0a0a0a;
+            --lavender: #b19cd9;
+        }
+
+        body {
+            margin: 0;
+            background-color: var(--black);
+            color: var(--white);
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+        }
+
+        /* Лавандовый блюм на фоне первого экрана */
+        .bloom-container {
+            position: fixed; /* Фиксируем, чтобы был только на старте */
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: 0;
+            filter: blur(120px);
+            opacity: 0.6;
+            pointer-events: none;
+        }
+
+        .bloom-circle {
+            position: absolute;
+            background: var(--lavender);
+            border-radius: 50%;
+            animation: move 15s infinite alternate ease-in-out;
+        }
+
+        .bloom-1 { width: 40vw; height: 40vw; top: -10%; left: -10%; background: #7b2cbf; }
+        .bloom-2 { width: 50vw; height: 50vw; bottom: -20%; right: -10%; animation-duration: 20s; }
+
+        @keyframes move {
+            0% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(10vw, 5vh) scale(1.1); }
+            100% { transform: translate(-5vw, 15vh) scale(0.9); }
+        }
+
+        /* Первый экран */
+        .main-stage {
+            position: relative;
+            z-index: 5;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .typography-bg {
+            position: absolute;
+            z-index: 1;
+            text-align: center;
+            width: 100%;
+        }
+
+        .first-name {
+            font-family: 'Unbounded', sans-serif;
+            font-size: 15vw;
+            line-height: 0.8;
+            margin: 0;
+            text-transform: uppercase;
+        }
+
+        .last-name {
+            font-family: 'Playfair Display', serif;
+            font-style: italic;
+            font-size: 16vw;
+            line-height: 0.8;
+            display: block;
+            color: transparent;
+            -webkit-text-stroke: 1.5px var(--white);
+            margin-top: -2vw;
+        }
+
+        .photo-overlay-container {
+            position: relative;
+            z-index: 10;
+            width: 28vw;
+            height: 42vw;
+            cursor: pointer;
+        }
+
+        .avatar {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            transition: all 0.6s cubic-bezier(0.19, 1, 0.22, 1);
+        }
+
+        .photo2 { opacity: 0; transform: scale(0.9) rotate(5deg); }
+
+        .photo-overlay-container:hover .photo1 { opacity: 0; transform: translateY(-20px) scale(1.05); }
+        .photo-overlay-container:hover .photo2 { opacity: 1; transform: scale(1.1) rotate(0); }
+
+        .footer-tag {
+            position: absolute;
+            bottom: -15%;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.6em;
+            background: rgba(10, 10, 10, 0.8);
+            backdrop-filter: blur(5px);
+            padding: 8px 25px;
+            white-space: nowrap;
+        }
+
+        .corner-label {
+            position: fixed; /* ЧтобыLabels были всегда видны на первом экране */
+            z-index: 20;
+            font-size: 0.7rem;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            opacity: 0.7;
+        }
+        .top-left { top: 30px; left: 30px; }
+        .bottom-right { bottom: 30px; right: 30px; }
+
+        /* БЛОК ОБ О СЕБЕ (СНИЗУ) */
+        .about-section {
+            position: relative;
+            z-index: 100; /* Наползает поверх первого экрана */
+            background: var(--black);
+            padding: 150px 5%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            box-shadow: 0 -50px 100px rgba(0,0,0,0.8);
+        }
+
+        .about-photo-wrapper {
+            position: relative;
+            width: 100%;
+            max-width: 900px;
+            margin-bottom: 60px;
+        }
+
+        .about-photo-placeholder {
+            width: 100%;
+            aspect-ratio: 16/9;
+            background: #151515;
+            overflow: hidden;
+            border: 1px solid rgba(177, 156, 217, 0.2);
+        }
+
+        .about-photo-placeholder img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: contrast(1.1) brightness(0.9);
+            transition: 0.8s ease;
+        }
+
+        .about-photo-placeholder:hover img {
+            transform: scale(1.02);
+            filter: contrast(1) brightness(1);
+        }
+
+        .about-text-block {
+            width: 100%;
+            max-width: 900px;
+            text-align: center;
+        }
+
+        .about-title {
+            font-family: 'Unbounded', sans-serif;
+            font-size: clamp(2.5rem, 8vw, 5rem);
+            text-transform: uppercase;
+            margin-bottom: 30px;
+            line-height: 1;
+        }
+
+        .about-title span {
+            font-family: 'Playfair Display', serif;
+            font-style: italic;
+            color: var(--lavender);
+            text-transform: none;
+        }
+
+        .about-description {
+            font-size: clamp(1.1rem, 2vw, 1.4rem);
+            line-height: 1.6;
+            font-weight: 300;
+            color: rgba(255, 255, 255, 0.7);
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .about-watermark {
+            position: absolute;
+            bottom: 5%;
+            left: 50%;
+            transform: translateX(-50%);
+            font-family: 'Unbounded', sans-serif;
+            font-size: 25vw;
+            color: rgba(177, 156, 217, 0.05);
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        /* Адаптив для мобилок */
+        @media (max-width: 768px) {
+            .photo-overlay-container { width: 70vw; height: 100vw; }
+            .first-name { font-size: 20vw; }
+            .last-name { font-size: 22vw; }
+            .about-section { padding: 80px 5%; }
+        }
+
+        /* Блок ЭТАПЫ РАБОТЫ */
+.steps-section {
+    position: relative;
+    background: var(--black);
+    padding: 100px 0;
+    overflow: hidden;
+    z-index: 110;
+}
+
+/* Бегущая строка (Marquee) */
+.marquee-container {
+    background: var(--lavender);
+    color: var(--black);
+    padding: 20px 0;
+    transform: rotate(-2deg); /* Небольшой наклон для дерзости */
+    width: 110%;
+    margin-left: -5%;
+    margin-bottom: 80px;
+}
+
+.marquee-text {
+    font-family: 'Unbounded', sans-serif;
+    font-size: 2rem;
+    font-weight: 900;
+    white-space: nowrap;
+    display: inline-block;
+    animation: marquee 20s linear infinite;
+}
+
+@keyframes marquee {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+}
+
+/* Сетка этапов */
+.steps-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    padding: 0 5%;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.step-card {
+    background: #111;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    padding: 40px;
+    position: relative;
+    transition: 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+    cursor: default;
+}
+
+.step-card:hover {
+    background: #1a1a1a;
+    border-color: var(--lavender);
+    transform: translateY(-10px);
+}
+
+.step-number {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: 4rem;
+    color: var(--lavender);
+    opacity: 0.3;
+    position: absolute;
+    top: 10px;
+    right: 20px;
+}
+
+.step-title {
+    font-family: 'Unbounded', sans-serif;
+    font-size: 1.2rem;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+}
+
+.step-desc {
+    font-size: 0.9rem;
+    line-height: 1.6;
+    color: rgba(255, 255, 255, 0.5);
+    font-weight: 300;
+}
+
+/* Линия-разделитель в стиле Timeline */
+.timeline-line {
+    width: 90%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--lavender), transparent);
+    margin: 60px auto 0;
+    opacity: 0.3;
+}
+
+/* Блок Портфолио */
+.portfolio-section {
+    background: var(--black);
+    padding: 100px 5%;
+    z-index: 120;
+    position: relative;
+}
+
+.portfolio-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 40px;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+/* Кастомный контейнер плеера */
+.video-card {
+    position: relative;
+    background: #0f0f0f;
+    border: 1px solid rgba(177, 156, 217, 0.1);
+    overflow: hidden;
+    transition: 0.5s cubic-bezier(0.2, 1, 0.3, 1);
+}
+
+.video-card:hover {
+    border-color: var(--lavender);
+    transform: translateY(-10px);
+}
+
+/* Обертка для самого видео */
+.video-wrapper {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 9/16; /* Формат Reels */
+    background: #000;
+}
+
+video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    cursor: none; /* Чтобы наш лавандовый курсор работал */
+}
+
+/* Кастомные контроллеры (появляются при наведении) */
+.video-controls {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    padding: 20px;
+    background: linear-gradient(transparent, rgba(0,0,0,0.8));
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    opacity: 0;
+    transition: 0.3s;
+    z-index: 5;
+}
+
+.video-card:hover .video-controls {
+    opacity: 1;
+}
+
+/* Кнопка Play/Pause */
+.play-btn {
+    background: var(--lavender);
+    border: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: none;
+    transition: 0.3s;
+}
+
+.play-btn:hover {
+    transform: scale(1.1);
+    background: var(--white);
+}
+
+/* Полоса прогресса */
+.progress-bar {
+    flex-grow: 1;
+    height: 2px;
+    background: rgba(255,255,255,0.2);
+    position: relative;
+}
+
+.progress-fill {
+    height: 100%;
+    background: var(--lavender);
+    width: 0%;
+}
+
+.video-info {
+    padding: 20px;
+}
+
+.video-category {
+    font-size: 0.7rem;
+    color: var(--lavender);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.video-name {
+    font-family: 'Unbounded', sans-serif;
+    font-size: 1rem;
+    margin-top: 5px;
+}
+
+
+/* Контейнер для ВК Клипа */
+.video-card.iframe-style {
+    border: 1px solid rgba(177, 156, 217, 0.15);
+    background: #000;
+}
+
+.video-wrapper.iframe-mode {
+    position: relative;
+    width: 100%;
+    /* Фиксируем соотношение сторон под Reels */
+    aspect-ratio: 9/16; 
+    overflow: hidden;
+}
+
+.video-wrapper.iframe-mode iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: none;
+    /* Убираем лишние зазоры */
+    display: block;
+}
+
+/* Декоративная маска сверху (опционально) */
+/* Она добавит легкий лавандовый отсвет по краям, чтобы "подружить" видео с сайтом */
+.video-wrapper.iframe-mode::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    box-shadow: inset 0 0 40px rgba(177, 156, 217, 0.1);
+    pointer-events: none; /* Чтобы можно было нажать на Play в самом ВК */
+}
+
+.video-info {
+    padding: 25px;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+    </style>
+</head>
+<body>
+
+    <div class="bloom-container">
+        <div class="bloom-circle bloom-1"></div>
+        <div class="bloom-circle bloom-2"></div>
+    </div>
+
+    <div class="corner-label top-left">LUCY NOSFI // ART VISUALS</div>
+    <div class="corner-label bottom-right">REELS PRODUCTION 2026</div>
+
+    <div class="main-stage">
+        <div class="typography-bg">
+            <h1 class="first-name">ЛЮСИ</h1>
+            <h1 class="last-name">Носфи</h1>
+        </div>
+
+        <div class="photo-overlay-container">
+            <img src="photo1.png" alt="Lucy 1" class="avatar photo1">
+            <img src="photo2.png" alt="Lucy 2" class="avatar photo2">
+            <div class="footer-tag">ваш идеальный reels maker</div>
+        </div>
+    </div>
+
+    <section class="about-section">
+        <div class="about-photo-wrapper">
+            <div class="about-photo-placeholder">
+                <img src="photo 3.jpg" alt="Lucy Lifestyle">
+            </div>
+        </div>
+
+        <div class="about-text-block">
+            <h2 class="about-title">Создаю визуальный <span>vibe</span></h2>
+            <p class="about-description">
+                Меня зовут <b>Люси Носфи</b>. В моих работах нет случайных кадров. 
+                Каждый переход, каждый блик и каждый звук работают на одну цель — 
+                сделать ваш бренд <b>недосягаемым</b> для конкурентов. 
+                <br><br>
+                Я соединяю эстетику арта и коммерческий подход, превращая обычные Reels в инструмент влияния.
+            </p>
+        </div>
+        <div class="about-watermark">ART</div>
+    </section>
+
+    <section class="steps-section">
+    <div class="marquee-container">
+        <div class="marquee-text">
+            PROCESS • WORKFLOW • CREATION • EDITING • VISUAL ART • PROCESS • WORKFLOW • CREATION • EDITING • VISUAL ART •
+        </div>
+    </div>
+
+    <div class="steps-grid">
+        <div class="step-card">
+            <span class="step-number">01</span>
+            <h3 class="step-title">Ideation</h3>
+            <p class="step-desc">Разработка концепции, анализ трендов и написание сценария, который зацепит зрителя с первой секунды.</p>
+        </div>
+
+        <div class="step-card">
+            <span class="step-number">02</span>
+            <h3 class="step-title">Production</h3>
+            <p class="step-desc">Профессиональная съемка с акцентом на свет, композицию и динамику кадра. Использую топовое оборудование.</p>
+        </div>
+
+        <div class="step-card">
+            <span class="step-number">03</span>
+            <h3 class="step-title">Art Edit</h3>
+            <p class="step-desc">Магия монтажа: саунд-дизайн, цветокоррекция в стиле High Fashion и уникальные переходы.</p>
+        </div>
+
+        <div class="step-card">
+            <span class="step-number">04</span>
+            <h3 class="step-title">Delivery</h3>
+            <p class="step-desc">Готовый контент, адаптированный под алгоритмы, который готов разрывать охваты ваших соцсетей.</p>
+        </div>
+    </div>
+
+    <div class="timeline-line"></div>
+</section>
+
+<section class="portfolio-section">
+    <div class="portfolio-grid">
+        
+        <div class="video-card">
+            <div class="video-wrapper">
+                <video class="custom-video" loop playsinline>
+                    <source src="reels1.mp4" type="video/mp4">
+                </video>
+                <div class="video-controls">
+                    <button class="play-btn">
+                        <svg width="14" height="14" viewBox="0 0 14 18" fill="black"><path d="M0 0V18L14 9L0 0Z"/></svg>
+                    </button>
+                    <div class="progress-bar"><div class="progress-fill"></div></div>
+                </div>
+            </div>
+            <div class="video-info">
+                <span class="video-category">Atmosphere / TRK "MOSCOW"</span>
+                <p class="video-name"> VIBE 2026</p>
+            </div>
+        </div>
+
+        <div class="video-card">
+            <div class="video-wrapper">
+                <video class="custom-video" loop playsinline>
+                    <source src="reels2.mp4" type="video/mp4">
+                </video>
+                <div class="video-controls">
+                    <button class="play-btn">
+                        <svg width="14" height="14" viewBox="0 0 14 18" fill="black"><path d="M0 0V18L14 9L0 0Z"/></svg>
+                    </button>
+                    <div class="progress-bar"><div class="progress-fill"></div></div>
+                </div>
+            </div>
+            <div class="video-info">
+                <span class="video-category">Commercial / Dynamic</span>
+                <p class="video-name">ART GIRLSIT</p>
+            </div>
+        </div>
+
+    </div>
+</section>
+<div class="custom-cursor"></div>
+
+<script>
+   const cursor = document.querySelector('.custom-cursor');
+
+document.addEventListener('mousemove', (e) => {
+    // Используем requestAnimationFrame для идеальной плавности
+    requestAnimationFrame(() => {
+        cursor.style.left = e.clientX + 'px';
+        cursor.style.top = e.clientY + 'px';
+    });
+});
+
+// Добавляем реакцию на ссылки и интерактивные объекты
+const links = document.querySelectorAll('a, button, .photo-overlay-container, .step-card, .about-photo-placeholder');
+
+links.forEach(link => {
+    link.addEventListener('mouseenter', () => {
+        cursor.classList.add('active');
+    });
+    link.addEventListener('mouseleave', () => {
+        cursor.classList.remove('active');
+    });
+});
+
+document.querySelectorAll('.video-card').forEach(card => {
+    const video = card.querySelector('.custom-video');
+    const playBtn = card.querySelector('.play-btn');
+    const progressFill = card.querySelector('.progress-fill');
+
+    // Функция воспроизведения/паузы
+    const togglePlay = () => {
+        if (video.paused) {
+            video.play();
+            playBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 14 14" fill="black"><rect width="4" height="14"/><rect x="10" width="4" height="14"/></svg>';
+        } else {
+            video.pause();
+            playBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 14 18" fill="black"><path d="M0 0V18L14 9L0 0Z"/></svg>';
+        }
+    };
+
+    playBtn.addEventListener('click', togglePlay);
+    video.addEventListener('click', togglePlay);
+
+    // Обновление полоски прогресса
+    video.addEventListener('timeupdate', () => {
+        const percent = (video.currentTime / video.duration) * 100;
+        progressFill.style.width = `${percent}%`;
+    });
+
+    // Остановка при уходе курсора (опционально, чтобы не шумело)
+    card.addEventListener('mouseleave', () => {
+        video.pause();
+        playBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 14 18" fill="black"><path d="M0 0V18L14 9L0 0Z"/></svg>';
+    });
+});
+</script>
+</body>
+</html>
