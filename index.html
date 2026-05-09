@@ -270,6 +270,64 @@
     z-index: 2;
     opacity: 0.7;
 }
+
+       .contact-wrapper {
+    width: 100%;
+    padding: 80px 0;
+    display: flex;
+    justify-content: center;
+    background: var(--black);
+    position: relative;
+    z-index: 130;
+}
+
+.magnetic-btn.oval {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* Уменьшенные размеры и овальная форма */
+    width: 160px;
+    height: 60px;
+    text-decoration: none;
+    color: var(--white);
+    font-family: 'Unbounded', sans-serif;
+    font-size: 0.75rem;
+    letter-spacing: 3px;
+    transition: transform 0.2s ease-out;
+}
+
+.btn-circle {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%;
+    height: 100%;
+    border: 1px solid rgba(177, 156, 217, 0.4);
+    /* Делаем овал */
+    border-radius: 100px; 
+    transition: all 0.4s cubic-bezier(0.19, 1, 0.22, 1);
+    z-index: 1;
+    background: rgba(177, 156, 217, 0.03);
+}
+
+.btn-text {
+    position: relative;
+    z-index: 2;
+    transition: color 0.3s, letter-spacing 0.3s;
+}
+
+/* Эффекты при наведении */
+.magnetic-btn:hover .btn-circle {
+    background: var(--lavender);
+    border-color: var(--lavender);
+    transform: scale(1.05);
+    box-shadow: 0 0 30px rgba(177, 156, 217, 0.3);
+}
+
+.magnetic-btn:hover .btn-text {
+    color: var(--black);
+    letter-spacing: 5px; /* Текст слегка растягивается при наведении */
+}
     </style>
 </head>
 <body>
@@ -491,7 +549,37 @@ if (parent && !isTouchDevice) {
     }
 });
 
+const mBtn = document.querySelector('.magnetic-btn');
 
+if (mBtn && !isTouchDevice) {
+    mBtn.addEventListener('mousemove', (e) => {
+        const rect = mBtn.getBoundingClientRect();
+        
+        // Вычисляем положение курсора относительно центра овала
+        const x = e.clientX - rect.left - rect.width / 2;
+        const y = e.clientY - rect.top - rect.height / 2;
+
+        // Эффект притяжения (сила 0.35)
+        requestAnimationFrame(() => {
+            mBtn.style.transform = `translate(${x * 0.35}px, ${y * 0.35}px)`;
+            // Текст внутри движется чуть медленнее для эффекта объема
+            mBtn.querySelector('.btn-text').style.transform = `translate(${x * 0.15}px, ${y * 0.15}px)`;
+        });
+    });
+
+    mBtn.addEventListener('mouseleave', () => {
+        requestAnimationFrame(() => {
+            mBtn.style.transform = `translate(0, 0)`;
+            mBtn.querySelector('.btn-text').style.transform = `translate(0, 0)`;
+        });
+    });
+}
 </script>
+    <div class="contact-wrapper">
+    <a href="https://vk.com/lucynosfy" target="_blank" class="magnetic-btn oval">
+        <span class="btn-text">CONTACT</span>
+        <div class="btn-circle"></div>
+    </a>
+</div>
 </body>
 </html>
