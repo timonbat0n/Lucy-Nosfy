@@ -1,425 +1,660 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lucy Nosfi | Reelsmaker</title>
-    <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@900&family=Playfair+Display:ital,wght@1,900&family=Inter:wght@300;800&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --white: #ffffff;
-            --black: #0a0a0a;
-            --lavender: #b19cd9;
-            --dark-grey: #151515;
-            --bloom-color: rgba(177, 156, 217, 0.15); /* Цвет свечения */
-        }
-            html, body {
-    cursor: none; /* Скрываем стандартный системный курсор везде */
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lucy Nosfi | Art Visuals 2026</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;700;900&family=Playfair+Display:ital,wght@1,900&family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+
+<style>
+:root{
+    --white:#fff;
+    --black:#090909;
+    --dark:#111;
+    --lavender:#b19cd9;
+    --cyan:#00f2ff;
+    --glass:rgba(255,255,255,.04);
+    --border:rgba(255,255,255,.08);
 }
 
-a, button, video, .magnetic-btn {
-    cursor: none; /* Гарантируем, что на ссылках он тоже не появится */
+*{box-sizing:border-box;margin:0;padding:0}
+
+html{
+    scroll-behavior:smooth;
 }
-@media (pointer: fine) {
-    /* Только для устройств с мышью */
-    body {
-        cursor: none;
+
+body{
+    background:var(--black);
+    color:var(--white);
+    font-family:'Inter',sans-serif;
+    overflow-x:hidden;
+    cursor:none;
+}
+
+::-webkit-scrollbar{width:6px}
+::-webkit-scrollbar-track{background:#000}
+::-webkit-scrollbar-thumb{background:var(--lavender);border-radius:10px}
+
+.bg-grid{
+    position:fixed;
+    inset:0;
+    z-index:-2;
+    background-image:
+        linear-gradient(rgba(177,156,217,.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(177,156,217,.04) 1px, transparent 1px);
+    background-size:50px 50px;
+}
+
+.noise{
+    position:fixed;
+    inset:0;
+    background:url('https://grainy-gradients.vercel.app/noise.svg');
+    opacity:.05;
+    pointer-events:none;
+    z-index:9999;
+}
+
+.scanlines{
+    position:fixed;
+    inset:0;
+    pointer-events:none;
+    background:linear-gradient(to bottom, transparent 50%, rgba(0,0,0,.15) 51%);
+    background-size:100% 4px;
+    z-index:9998;
+}
+
+.scroll-progress{
+    position:fixed;
+    top:0;
+    left:0;
+    width:0%;
+    height:2px;
+    background:var(--lavender);
+    z-index:10000;
+    box-shadow:0 0 20px var(--lavender);
+}
+
+.bloom-container{
+    position:fixed;
+    inset:0;
+    overflow:hidden;
+    z-index:-1;
+    pointer-events:none;
+}
+
+.bloom{
+    position:absolute;
+    border-radius:50%;
+    filter:blur(140px);
+    background:rgba(177,156,217,.16);
+    animation:float 20s infinite alternate ease-in-out;
+}
+
+.bloom.one{
+    width:55vw;
+    height:55vw;
+    top:-10%;
+    left:-10%;
+}
+
+.bloom.two{
+    width:40vw;
+    height:40vw;
+    bottom:-10%;
+    right:-10%;
+    animation-duration:28s;
+}
+
+@keyframes float{
+    0%{transform:translate(0,0) scale(1)}
+    100%{transform:translate(10%,10%) scale(1.15)}
+}
+
+.corner-label{
+    position:fixed;
+    z-index:2000;
+    font-size:.7rem;
+    letter-spacing:4px;
+    opacity:.5;
+    text-transform:uppercase;
+}
+
+.top-left{top:30px;left:30px}
+.bottom-right{right:30px;bottom:30px}
+
+.custom-cursor{
+    width:16px;
+    height:16px;
+    border-radius:50%;
+    background:var(--lavender);
+    position:fixed;
+    pointer-events:none;
+    z-index:10001;
+    transform:translate(-50%,-50%);
+    mix-blend-mode:difference;
+    transition:.25s;
+}
+
+.custom-cursor.active{
+    width:60px;
+    height:60px;
+    background:rgba(177,156,217,.35);
+}
+
+.main-header{
+    position:fixed;
+    inset:0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    z-index:1000;
+    transition:.9s cubic-bezier(.19,1,.22,1);
+}
+
+.main-header.shrunk{
+    height:85px;
+    background:rgba(5,5,5,.85);
+    backdrop-filter:blur(18px);
+    border-bottom:1px solid rgba(177,156,217,.1);
+}
+
+.hero-photo{
+    position:absolute;
+    width:28vw;
+    height:40vw;
+    z-index:5;
+    overflow:hidden;
+    transition:.8s cubic-bezier(.19,1,.22,1);
+}
+
+.hero-photo img{
+    position:absolute;
+    inset:0;
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    transition:1s;
+}
+
+.hero-photo .photo2{
+    opacity:0;
+    transform:scale(.9) rotate(5deg);
+}
+
+.hero-photo:hover .photo1{
+    opacity:0;
+    transform:translateY(-20px);
+}
+
+.hero-photo:hover .photo2{
+    opacity:1;
+    transform:scale(1.05);
+}
+
+.main-header.shrunk .hero-photo{
+    opacity:0;
+    transform:translateY(-100px) scale(.5);
+}
+
+.typography{
+    position:relative;
+    text-align:center;
+    z-index:10;
+    transition:.8s cubic-bezier(.19,1,.22,1);
+}
+
+.main-header.shrunk .typography{
+    transform:scale(.13);
+}
+
+.first-name{
+    font-family:'Unbounded',sans-serif;
+    font-size:15vw;
+    line-height:.8;
+    position:relative;
+}
+
+.last-name{
+    font-family:'Playfair Display',serif;
+    font-size:16vw;
+    font-style:italic;
+    color:transparent;
+    -webkit-text-stroke:1.5px var(--white);
+    margin-top:-2vw;
+}
+
+.main-header.shrunk .last-name{
+    -webkit-text-stroke:8px var(--white);
+}
+
+.rgb-layer{
+    position:absolute;
+    inset:0;
+    opacity:.55;
+    pointer-events:none;
+    mix-blend-mode:screen;
+    transition:.2s;
+}
+
+.red{color:red}
+.blue{color:var(--cyan)}
+
+.content{
+    position:relative;
+    z-index:10;
+    padding-top:100vh;
+}
+
+section{
+    padding:120px 6%;
+}
+
+.about{
+    text-align:center;
+}
+
+.about-image{
+    max-width:1000px;
+    margin:0 auto 60px;
+    overflow:hidden;
+    border:1px solid rgba(177,156,217,.15);
+    clip-path:polygon(0 0,100% 0,100% 92%,0 100%);
+}
+
+.about-image img{
+    width:100%;
+    display:block;
+    transition:1.2s;
+}
+
+.section-title{
+    font-family:'Unbounded',sans-serif;
+    font-size:clamp(2rem,5vw,5rem);
+    margin-bottom:30px;
+}
+
+.about p{
+    max-width:850px;
+    margin:0 auto;
+    line-height:1.9;
+    opacity:.8;
+    font-size:1.1rem;
+}
+
+.skills{
+    text-align:center;
+}
+
+.radar-wrap{
+    max-width:620px;
+    margin:60px auto 0;
+    opacity:0;
+    transform:scale(.85);
+    transition:1s;
+}
+
+.radar-wrap.visible{
+    opacity:1;
+    transform:scale(1);
+}
+
+.radar-svg{
+    width:100%;
+    filter:drop-shadow(0 0 30px rgba(177,156,217,.35));
+}
+
+.marquee{
+    background:var(--lavender);
+    color:#000;
+    padding:18px 0;
+    overflow:hidden;
+    transform:rotate(-1deg);
+}
+
+.marquee-track{
+    white-space:nowrap;
+    font-family:'Unbounded',sans-serif;
+    font-size:1.3rem;
+    animation:marquee 18s linear infinite;
+}
+
+@keyframes marquee{
+    from{transform:translateX(0)}
+    to{transform:translateX(-50%)}
+}
+
+.steps-grid,
+.portfolio-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+    gap:30px;
+    max-width:1400px;
+    margin:0 auto;
+}
+
+.step-card{
+    background:rgba(20,20,20,.55);
+    border:1px solid var(--border);
+    padding:40px;
+    backdrop-filter:blur(10px);
+    transform-style:preserve-3d;
+    transition:.2s;
+}
+
+.step-card:hover{
+    border-color:var(--lavender);
+}
+
+.step-number{
+    color:var(--lavender);
+    font-family:'Unbounded';
+    display:block;
+    margin-bottom:14px;
+}
+
+.step-card h3{
+    font-family:'Unbounded';
+    margin-bottom:14px;
+}
+
+.step-card p{
+    opacity:.7;
+    line-height:1.7;
+}
+
+.video-card{
+    position:relative;
+    padding:1px;
+    background:linear-gradient(45deg, transparent, rgba(177,156,217,.3), transparent);
+    transition:.5s;
+}
+
+.video-card:hover{
+    background:linear-gradient(45deg, var(--lavender), transparent, var(--lavender));
+}
+
+.video-wrapper{
+    position:relative;
+    aspect-ratio:9/16;
+    overflow:hidden;
+    background:#000;
+}
+
+.video-wrapper video{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    transition:.8s;
+    filter:grayscale(.15);
+}
+
+.video-card:hover video{
+    transform:scale(1.05);
+    filter:none;
+}
+
+.player-ui{
+    position:absolute;
+    inset:0;
+    display:flex;
+    flex-direction:column;
+    justify-content:space-between;
+    padding:20px;
+    background:linear-gradient(to bottom, rgba(0,0,0,.35), transparent 25%, transparent 75%, rgba(0,0,0,.7));
+    opacity:0;
+    transition:.4s;
+}
+
+.video-card:hover .player-ui{
+    opacity:1;
+}
+
+.play-icon{
+    width:70px;
+    height:70px;
+    border:1px solid var(--lavender);
+    border-radius:50%;
+    margin:auto;
+    position:relative;
+    backdrop-filter:blur(6px);
+}
+
+.play-icon:after{
+    content:'';
+    position:absolute;
+    top:50%;
+    left:55%;
+    transform:translate(-50%,-50%);
+    border-style:solid;
+    border-width:11px 0 11px 18px;
+    border-color:transparent transparent transparent white;
+}
+
+.progress{
+    height:2px;
+    background:rgba(255,255,255,.25);
+    position:relative;
+}
+
+.progress span{
+    position:absolute;
+    inset:0;
+    width:0%;
+    background:var(--lavender);
+    box-shadow:0 0 12px var(--lavender);
+}
+
+.player-info{
+    margin-top:14px;
+    display:flex;
+    justify-content:space-between;
+    font-size:.7rem;
+    letter-spacing:2px;
+    text-transform:uppercase;
+}
+
+.video-info{
+    padding:20px;
+    background:#0c0c0c;
+}
+
+.video-category{
+    color:var(--lavender);
+    font-size:.7rem;
+    letter-spacing:2px;
+    text-transform:uppercase;
+}
+
+.video-name{
+    margin-top:10px;
+    font-family:'Unbounded';
+}
+
+.contact{
+    display:flex;
+    justify-content:center;
+    padding:120px 0 160px;
+}
+
+.magnetic-btn{
+    position:relative;
+    width:240px;
+    height:80px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    text-decoration:none;
+    color:#fff;
+    font-family:'Unbounded';
+    letter-spacing:4px;
+}
+
+.btn-circle{
+    position:absolute;
+    inset:0;
+    border:1px solid var(--lavender);
+    border-radius:60px;
+    transition:.4s;
+}
+
+.magnetic-btn:hover .btn-circle{
+    background:var(--lavender);
+    transform:scale(1.05);
+}
+
+.magnetic-btn:hover{
+    color:#000;
+}
+
+@media(max-width:900px){
+    body,.magnetic-btn,a,video{
+        cursor:auto;
     }
+
+    .custom-cursor{
+        display:none;
+    }
+
+    .hero-photo{
+        width:58vw;
+        height:75vw;
+    }
+
+    .first-name{font-size:22vw}
+    .last-name{font-size:24vw}
 }
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: var(--black); }
-        ::-webkit-scrollbar-thumb { background: var(--lavender); border-radius: 10px; }
-        
-        body { 
-            margin: 0; 
-            background-color: var(--black); 
-            color: var(--white); 
-            font-family: 'Inter', sans-serif; 
-            overflow-x: hidden; 
-        }
-
-        /* --- БЛОК БЛЮМОВ (ФОНОВОЕ СВЕЧЕНИЕ) --- */
-        .bloom-container {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 0;
-            pointer-events: none;
-            overflow: hidden;
-        }
-
-        .bloom-circle {
-            position: absolute;
-            border-radius: 50%;
-            background: var(--bloom-color);
-            filter: blur(120px);
-            animation: moveBloom 20s infinite alternate ease-in-out;
-        }
-
-        .bloom-1 {
-            width: 50vw;
-            height: 50vw;
-            top: -10%;
-            left: -10%;
-            animation-duration: 25s;
-        }
-
-        .bloom-2 {
-            width: 40vw;
-            height: 40vw;
-            bottom: -5%;
-            right: -5%;
-            background: rgba(177, 156, 217, 0.1);
-            animation-duration: 18s;
-            animation-delay: -5s;
-        }
-
-        @keyframes moveBloom {
-            0% { transform: translate(0, 0) scale(1); }
-            50% { transform: translate(10%, 15%) scale(1.1); }
-            100% { transform: translate(-5%, 5%) scale(0.9); }
-        }
-
-        /* --- ФИКСИРОВАННЫЙ ХЕДЕР --- */
-        .main-header-area {
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%;
-            height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-            pointer-events: none;
-            transition: all 0.8s cubic-bezier(0.19, 1, 0.22, 1);
-        }
-
-        .main-header-area.shrunk {
-            height: 80px;
-            background: rgba(10, 10, 10, 0.85);
-            backdrop-filter: blur(15px);
-            border-bottom: 1px solid rgba(177, 156, 217, 0.1);
-        }
-
-        .photo-overlay-container {
-            position: absolute;
-            z-index: 50;
-            width: 28vw;
-            height: 40vw;
-            pointer-events: auto;
-            transition: all 0.8s cubic-bezier(0.19, 1, 0.22, 1);
-        }
-
-        .main-header-area.shrunk .photo-overlay-container {
-            opacity: 0;
-            transform: scale(0.5) translateY(-100px);
-            pointer-events: none;
-        }
-
-        .avatar { position: absolute; width: 100%; height: 100%; object-fit: cover; transition: all 0.8s cubic-bezier(0.19, 1, 0.22, 1); }
-        .photo2 { opacity: 0; transform: scale(0.9) rotate(5deg); }
-        .photo-overlay-container:hover .photo1 { opacity: 0; transform: translateY(-20px); }
-        .photo-overlay-container:hover .photo2 { opacity: 1; transform: scale(1.1) rotate(0); }
-
-        .typography-bg {
-            position: relative;
-            z-index: 10;
-            text-align: center;
-            width: 100%;
-            transition: all 0.8s cubic-bezier(0.19, 1, 0.22, 1);
-            transform-origin: center center;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        .main-header-area.shrunk .typography-bg {
-            transform: scale(0.12);
-        }
-
-        .first-name { font-family: 'Unbounded', sans-serif; font-size: 15vw; line-height: 0.8; margin: 0; text-transform: uppercase; }
-        .last-name { 
-            font-family: 'Playfair Display', serif; font-style: italic; font-size: 16vw; 
-            line-height: 0.8; display: block; color: transparent; 
-            -webkit-text-stroke: 1.5px var(--white); margin-top: -2vw; 
-        }
-
-        .main-header-area.shrunk .last-name { -webkit-text-stroke: 8px var(--white); }
-
-        .rgb-parent { position: relative; display: inline-block; }
-        .rgb-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; mix-blend-mode: screen; transition: transform 0.1s ease-out; opacity: 0.7; }
-        .rgb-layer.red { color: #ff0000; }
-        .rgb-layer.blue { color: #0000ff; }
-        .main-header-area.shrunk .rgb-layer { opacity: 0; }
-
-        .content-wrapper {
-            position: relative;
-            z-index: 100;
-            padding-top: 100vh;
-        }
-
-        .about-section { padding: 150px 5%; display: flex; flex-direction: column; align-items: center; background: var(--black); }
-        .about-photo-placeholder { width: 100%; max-width: 900px; aspect-ratio: 16/9; background: var(--dark-grey); overflow: hidden; border: 1px solid rgba(177, 156, 217, 0.2); margin-bottom: 60px; }
-        .about-photo-placeholder img { width: 100%; height: 100%; object-fit: cover; transition: 1.2s ease; }
-        .about-title { font-family: 'Unbounded', sans-serif; font-size: clamp(2.5rem, 6vw, 5rem); text-align: center; margin-bottom: 30px; }
-        .about-description { max-width: 800px; font-size: 1.2rem; line-height: 1.6; text-align: center; opacity: 0.8; }
-        
-        .marquee-container { background: var(--lavender); color: var(--black); padding: 15px 0; transform: rotate(-1deg); width: 110%; margin-left: -5%; margin-top: 50px; margin-bottom: 80px; overflow: hidden; }
-        .marquee-text { font-family: 'Unbounded', sans-serif; font-size: 1.5rem; white-space: nowrap; display: inline-block; animation: marquee 20s linear infinite; }
-        @keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
-
-        .steps-section { padding: 100px 0; background: var(--black); }
-        .steps-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; padding: 0 5%; max-width: 1400px; margin: 0 auto; }
-        .step-card { background: #111; padding: 40px; border: 1px solid rgba(255,255,255,0.05); transition: 0.4s; }
-        .step-card:hover { border-color: var(--lavender); transform: translateY(-10px); }
-        .step-number { color: var(--lavender); font-family: 'Unbounded'; font-size: 1.2rem; display: block; margin-bottom: 15px; }
-
-        .portfolio-section { padding: 100px 5%; background: var(--black); }
-        .portfolio-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 40px; max-width: 1400px; margin: 0 auto; }
-        .video-card { background: #0f0f0f; border: 1px solid rgba(255,255,255,0.05); overflow: hidden; }
-        .video-wrapper { position: relative; width: 100%; aspect-ratio: 9/16; background: #000; }
-        video { width: 100%; height: 100%; object-fit: cover; cursor: pointer; }
-        
-        .video-info { padding: 20px; }
-        .video-category { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 2px; color: var(--lavender); }
-        .video-name { font-family: 'Unbounded'; margin-top: 10px; }
-
-        .contact-wrapper { width: 100%; padding: 100px 0; display: flex; justify-content: center; background: var(--black); }
-        .magnetic-btn { position: relative; display: flex; align-items: center; justify-content: center; width: 200px; height: 80px; text-decoration: none; color: var(--white); font-family: 'Unbounded', sans-serif; font-size: 0.8rem; letter-spacing: 3px; transition: transform 0.2s cubic-bezier(0.23, 1, 0.32, 1); }
-        .btn-circle { position: absolute; width: 100%; height: 100%; border: 1px solid rgba(177, 156, 217, 0.4); border-radius: 100px; transition: 0.4s; z-index: 1; }
-        .btn-text { position: relative; z-index: 2; transition: transform 0.2s ease-out; }
-        .magnetic-btn:hover .btn-circle { background: var(--lavender); border-color: var(--lavender); }
-        .magnetic-btn:hover .btn-text { color: var(--black); }
-
-        .custom-cursor { width: 20px; height: 20px; background: var(--lavender); border-radius: 50%; position: fixed; pointer-events: none; z-index: 10001; mix-blend-mode: difference; transform: translate(-50%, -50%); transition: width 0.3s, height 0.3s; }
-        .custom-cursor.active { width: 50px; height: 50px; }
-
-        .corner-label { position: fixed; z-index: 2000; font-size: 0.7rem; letter-spacing: 3px; text-transform: uppercase; opacity: 0.5; pointer-events: none; }
-        .top-left { top: 30px; left: 30px; }
-        .bottom-right { bottom: 30px; right: 30px; }
-
-
-        /* КАСТОМНЫЙ ПЛЕЕР */
-.custom-player .video-wrapper {
-    position: relative;
-    cursor: none; /* Мы будем использовать кастомный курсор поверх */
-    overflow: hidden;
-}
-
-/* Скрытые по дефолту контролы */
-.player-controls {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    padding: 20px;
-    background: linear-gradient(to bottom, rgba(0,0,0,0.3) 0%, transparent 20%, transparent 80%, rgba(0,0,0,0.6) 100%);
-    opacity: 0;
-    transition: opacity 0.4s ease;
-    z-index: 5;
-}
-
-.custom-player:hover .player-controls {
-    opacity: 1;
-}
-
-/* Центральная иконка Play */
-.play-hint {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.play-icon {
-    width: 60px;
-    height: 60px;
-    border: 1px solid var(--lavender);
-    border-radius: 50%;
-    backdrop-filter: blur(5px);
-    position: relative;
-    transition: transform 0.3s ease;
-}
-
-.play-icon::after {
-    content: '';
-    position: absolute;
-    top: 50%; left: 55%;
-    transform: translate(-50%, -50%);
-    border-style: solid;
-    border-width: 10px 0 10px 18px;
-    border-color: transparent transparent transparent var(--white);
-}
-
-.custom-player:hover .play-icon {
-    transform: scale(1.1);
-}
-
-/* Нижняя панель */
-.player-bottom {
-    width: 100%;
-}
-
-.progress-container {
-    width: 100%;
-    height: 2px;
-    background: rgba(255,255,255,0.2);
-    margin-bottom: 15px;
-    position: relative;
-}
-
-.progress-bar {
-    position: absolute;
-    height: 100%;
-    background: var(--lavender);
-    width: 0%;
-    box-shadow: 0 0 10px var(--lavender);
-}
-
-.player-info {
-    display: flex;
-    justify-content: space-between;
-    font-size: 10px;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    opacity: 0.8;
-}
-
-.status-tag::before {
-    content: '';
-    display: inline-block;
-    width: 6px; height: 6px;
-    background: red;
-    border-radius: 50%;
-    margin-right: 6px;
-    box-shadow: 0 0 5px red;
-}
-
-/* Блюм при наведении на видео */
-.video-bloom {
-    position: absolute;
-    inset: 0;
-    background: var(--lavender);
-    filter: blur(100px);
-    opacity: 0;
-    z-index: 1;
-    pointer-events: none;
-    transition: opacity 0.6s ease;
-}
-
-.custom-player:hover .video-bloom {
-    opacity: 0.15;
-}
-
-video {
-    position: relative;
-    z-index: 2;
-}
-    </style>
+</style>
 </head>
 <body>
 
-    <div class="bloom-container">
-        <div class="bloom-circle bloom-1"></div>
-        <div class="bloom-circle bloom-2"></div>
+<div class="bg-grid"></div>
+<div class="noise"></div>
+<div class="scanlines"></div>
+<div class="scroll-progress" id="scrollProgress"></div>
+
+<div class="bloom-container">
+    <div class="bloom one"></div>
+    <div class="bloom two"></div>
+</div>
+
+<div class="custom-cursor"></div>
+
+<div class="corner-label top-left">LUCY NOSFI // DIGITAL ART</div>
+<div class="corner-label bottom-right">REELS PRODUCTION 2026</div>
+
+<header class="main-header">
+    <div class="hero-photo">
+        <img src="photo1.png" class="photo1" alt="">
+        <img src="photo2.png" class="photo2" alt="">
     </div>
 
-    <div class="custom-cursor"></div>
-    <div class="corner-label top-left">LUCY NOSFI // ART VISUALS</div>
-    <div class="corner-label bottom-right">REELS PRODUCTION 2026</div>
+    <div class="typography">
+        <h1 class="first-name">
+            <span class="rgb-layer red">ЛЮСИ</span>
+            <span class="rgb-layer blue">ЛЮСИ</span>
+            ЛЮСИ
+        </h1>
+        <h1 class="last-name">Носфи</h1>
+    </div>
+</header>
 
-    <header class="main-header-area">
-        <div class="photo-overlay-container">
-            <img src="photo1.png" alt="Lucy 1" class="avatar photo1">
-            <img src="photo2.png" alt="Lucy 2" class="avatar photo2">
+<div class="content">
+
+<section class="about">
+    <div class="about-image">
+        <img src="photo3.jpg" alt="">
+    </div>
+
+    <h2 class="section-title">VISUAL STORYTELLER</h2>
+
+    <p>
+        Я объединил оба дизайна в одну цельную cinematic-версию:
+        сохранены glitch‑типографика, bloom‑эффекты, кастомный player,
+        radar skills, magnetic‑анимации, 3D‑карточки, интерактивный hero
+        и атмосфера art / commercial visuals.
+    </p>
+</section>
+
+<section class="skills">
+    <h2 class="section-title">CORE SKILLS</h2>
+
+    <div class="radar-wrap" id="radarWrap">
+        <svg class="radar-svg" viewBox="0 0 400 400">
+            <circle cx="200" cy="200" r="160" fill="none" stroke="rgba(255,255,255,.1)"/>
+            <circle cx="200" cy="200" r="120" fill="none" stroke="rgba(255,255,255,.08)"/>
+            <circle cx="200" cy="200" r="80" fill="none" stroke="rgba(255,255,255,.06)"/>
+            <circle cx="200" cy="200" r="40" fill="none" stroke="rgba(255,255,255,.04)"/>
+            <g id="axes"></g>
+            <polygon id="skillsShape" fill="rgba(177,156,217,.2)" stroke="#b19cd9" stroke-width="2"></polygon>
+            <g id="points"></g>
+            <g id="labels"></g>
+        </svg>
+    </div>
+</section>
+
+<div class="marquee">
+    <div class="marquee-track">
+        MOTION • DESIGN • EDITING • VISUALS • STORY • ART • MOTION • DESIGN • EDITING • VISUALS • STORY • ART •
+    </div>
+</div>
+
+<section>
+    <div class="steps-grid">
+        <div class="step-card" data-tilt>
+            <span class="step-number">01</span>
+            <h3>CONCEPT</h3>
+            <p>Сбор референсов, moodboard и построение визуальной идеи проекта.</p>
         </div>
 
-        <div class="typography-bg">
-            <h1 class="first-name rgb-parent">
-                <span class="rgb-layer red">ЛЮСИ</span>
-                <span class="rgb-layer blue">ЛЮСИ</span>
-                ЛЮСИ
-            </h1>
-            <h1 class="last-name">Носфи</h1>
+        <div class="step-card" data-tilt>
+            <span class="step-number">02</span>
+            <h3>PRODUCTION</h3>
+            <p>Съемка, свет, композиция кадра и создание cinematic‑атмосферы.</p>
         </div>
-    </header>
 
-    <div class="content-wrapper">
-        <section class="about-section">
-            <div class="about-photo-placeholder">
-                <img src="photo3.jpg" alt="Lucy Lifestyle">
-            </div>
-            <div class="about-text-block">
-                <h2 class="about-title">Создаю визуальный <span>vibe</span></h2>
-                <p class="about-description">
-                    Меня зовут <b>Люси Носфи</b>. В моих работах нет случайных кадров.
-                    Каждый переход, каждый блик и каждый звук работают на одну цель — 
-                    сделать ваш бренд <b>недосягаемым</b> для конкурентов.
-                    <br><br>
-                    Я соединяю эстетику арта и коммерческий подход, превращая обычные Reels в инструмент влияния.
-                </p>
-            </div>
-        </section>
+        <div class="step-card" data-tilt>
+            <span class="step-number">03</span>
+            <h3>ART EDIT</h3>
+            <p>Монтаж, саунд‑дизайн, color grading и визуальная магия.</p>
+        </div>
 
-        <section class="steps-section">
-            <div class="marquee-container">
-                <div class="marquee-text">
-                    PROCESS • WORKFLOW • CREATION • EDITING • VISUAL ART • PROCESS • WORKFLOW • CREATION • EDITING • VISUAL ART •
-                </div>
-            </div>
-            <div class="steps-grid">
-                <div class="step-card">
-                    <span class="step-number">01</span>
-                    <h3 class="step-title">Ideation</h3>
-                    <p class="step-desc">Разработка концепции, анализ трендов и написание сценария, который зацепит зрителя.</p>
-                </div>
-                <div class="step-card">
-                    <span class="step-number">02</span>
-                    <h3 class="step-title">Production</h3>
-                    <p class="step-desc">Профессиональная съемка с акцентом на свет, композицию и динамику кадра.</p>
-                </div>
-                <div class="step-card">
-                    <span class="step-number">03</span>
-                    <h3 class="step-title">Art Edit</h3>
-                    <p class="step-desc">Магия монтажа: саунд-дизайн, цветокоррекция и уникальные переходы.</p>
-                </div>
-                <div class="step-card">
-                    <span class="step-number">04</span>
-                    <h3 class="step-title">Delivery</h3>
-                    <p class="step-desc">Готовый контент, адаптированный под алгоритмы соцсетей.</p>
-                </div>
-            </div>
-        </section>
+        <div class="step-card" data-tilt>
+            <span class="step-number">04</span>
+            <h3>DELIVERY</h3>
+            <p>Финальный контент, адаптированный под алгоритмы соцсетей.</p>
+        </div>
+    </div>
+</section>
 
-       <section class="portfolio-section">
+<section>
     <div class="portfolio-grid">
+
         <div class="video-card custom-player">
             <div class="video-wrapper">
                 <video loop playsinline preload="metadata">
                     <source src="reels1.mp4" type="video/mp4">
                 </video>
-                <div class="player-controls">
-                    <div class="play-hint">
-                        <div class="play-icon"></div>
-                    </div>
-                    <div class="player-bottom">
-                        <div class="progress-container">
-                            <div class="progress-bar"></div>
+
+                <div class="player-ui">
+                    <div class="play-icon"></div>
+
+                    <div>
+                        <div class="progress">
+                            <span class="progress-bar"></span>
                         </div>
+
                         <div class="player-info">
-                            <span class="status-tag">Live View</span>
-                            <span class="time-display">00:00</span>
+                            <span>LIVE VIEW</span>
+                            <span class="time">00:00</span>
                         </div>
                     </div>
                 </div>
-                <div class="video-bloom"></div>
             </div>
+
             <div class="video-info">
-                <span class="video-category">Atmosphere / TRK "MOSCOW"</span>
-                <p class="video-name">VIBE 2026</p>
+                <div class="video-category">Atmosphere / Visual Art</div>
+                <div class="video-name">VIBE 2026</div>
             </div>
         </div>
 
@@ -428,151 +663,208 @@ video {
                 <video loop playsinline preload="metadata">
                     <source src="reels2.mp4" type="video/mp4">
                 </video>
-                <div class="player-controls">
-                    <div class="play-hint">
-                        <div class="play-icon"></div>
-                    </div>
-                    <div class="player-bottom">
-                        <div class="progress-container">
-                            <div class="progress-bar"></div>
+
+                <div class="player-ui">
+                    <div class="play-icon"></div>
+
+                    <div>
+                        <div class="progress">
+                            <span class="progress-bar"></span>
                         </div>
+
                         <div class="player-info">
-                            <span class="status-tag">Live View</span>
-                            <span class="time-display">00:00</span>
+                            <span>COMMERCIAL</span>
+                            <span class="time">00:00</span>
                         </div>
                     </div>
                 </div>
-                <div class="video-bloom"></div>
             </div>
+
             <div class="video-info">
-                <span class="video-category">Commercial / Dynamic</span>
-                <p class="video-name">ART GIRLSIT</p>
+                <div class="video-category">Dynamic / Motion</div>
+                <div class="video-name">ART GIRLSIT</div>
             </div>
         </div>
+
     </div>
 </section>
 
-        <div class="contact-wrapper">
-            <a href="https://vk.com/lucynosfy" target="_blank" class="magnetic-btn">
-                <span class="btn-text">CONTACT</span>
-                <div class="btn-circle"></div>
-            </a>
-        </div>
-    </div>
+<div class="contact">
+    <a href="https://vk.com/lucynosfy" class="magnetic-btn" target="_blank">
+        <span style="position:relative;z-index:2">LET'S WORK</span>
+        <div class="btn-circle"></div>
+    </a>
+</div>
 
-    <script>
-        const cursor = document.querySelector('.custom-cursor');
-        const headerArea = document.querySelector('.main-header-area');
-        const redLayer = document.querySelector('.rgb-layer.red');
-        const blueLayer = document.querySelector('.rgb-layer.blue');
-        const mBtn = document.querySelector('.magnetic-btn');
-        const isTouch = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+</div>
 
-        document.addEventListener('mousemove', (e) => {
-            if (!isTouch) {
-                cursor.style.left = e.clientX + 'px';
-                cursor.style.top = e.clientY + 'px';
+<script>
+const cursor = document.querySelector('.custom-cursor');
 
-                if (!headerArea.classList.contains('shrunk')) {
-                    const x = (e.clientX - window.innerWidth / 2) / 25;
-                    const y = (e.clientY - window.innerHeight / 2) / 25;
-                    redLayer.style.transform = `translate(${x}px, ${y}px)`;
-                    blueLayer.style.transform = `translate(${-x}px, ${-y}px)`;
-                }
-            }
-        });
+document.addEventListener('mousemove',e=>{
+    cursor.style.left=e.clientX+'px';
+    cursor.style.top=e.clientY+'px';
 
-        const interactive = document.querySelectorAll('a, button, video, .step-card, .photo-overlay-container');
-        interactive.forEach(el => {
-            el.addEventListener('mouseenter', () => cursor.classList.add('active'));
-            el.addEventListener('mouseleave', () => cursor.classList.remove('active'));
-        });
+    const red=document.querySelector('.red');
+    const blue=document.querySelector('.blue');
 
-        window.addEventListener('scroll', () => {
-            const scrollY = window.scrollY;
-            if (scrollY > 50) {
-                headerArea.classList.add('shrunk');
-            } else {
-                headerArea.classList.remove('shrunk');
-            }
+    if(!document.querySelector('.main-header').classList.contains('shrunk')){
+        const x=(e.clientX-window.innerWidth/2)/25;
+        const y=(e.clientY-window.innerHeight/2)/25;
 
-            const aboutPhoto = document.querySelector('.about-photo-placeholder img');
-            if(aboutPhoto) {
-                aboutPhoto.style.transform = `scale(${1 + scrollY * 0.0002})`;
-            }
-        });
+        red.style.transform=`translate(${x}px,${y}px)`;
+        blue.style.transform=`translate(${-x}px,${-y}px)`;
+    }
+});
 
-        if (mBtn && !isTouch) {
-            mBtn.addEventListener('mousemove', (e) => {
-                const rect = mBtn.getBoundingClientRect();
-                const x = e.clientX - rect.left - rect.width / 2;
-                const y = e.clientY - rect.top - rect.height / 2;
+document.querySelectorAll('a,video,.step-card,.video-card').forEach(el=>{
+    el.addEventListener('mouseenter',()=>cursor.classList.add('active'));
+    el.addEventListener('mouseleave',()=>cursor.classList.remove('active'));
+});
 
-                requestAnimationFrame(() => {
-                    mBtn.style.transform = `translate(${x * 0.3}px, ${y * 0.3}px)`;
-                    mBtn.querySelector('.btn-text').style.transform = `translate(${x * 0.1}px, ${y * 0.1}px)`;
-                });
-            });
+window.addEventListener('scroll',()=>{
+    const scroll=window.scrollY;
+    const header=document.querySelector('.main-header');
 
-            mBtn.addEventListener('mouseleave', () => {
-                mBtn.style.transform = `translate(0, 0)`;
-                mBtn.querySelector('.btn-text').style.transform = `translate(0, 0)`;
-            });
-        }
+    document.getElementById('scrollProgress').style.width=
+        (scroll/(document.body.scrollHeight-window.innerHeight))*100+'%';
 
-        document.querySelectorAll('video').forEach(video => {
-            video.addEventListener('click', () => {
-                if (video.paused) {
-                    video.play();
-                } else {
-                    video.pause();
-                }
-            });
-            
-            if (!isTouch) {
-                video.addEventListener('mouseenter', () => video.play());
-                video.addEventListener('mouseleave', () => video.pause());
-            }
-        });
+    if(scroll>80){
+        header.classList.add('shrunk');
+    }else{
+        header.classList.remove('shrunk');
+    }
 
-        document.querySelectorAll('.custom-player').forEach(player => {
-    const video = player.querySelector('video');
-    const progressBar = player.querySelector('.progress-bar');
-    const timeDisplay = player.querySelector('.time-display');
+    const about=document.querySelector('.about-image img');
+    about.style.transform=`scale(${1+scroll*0.00015})`;
+});
 
-    // Обновление прогресс-бара
-    video.addEventListener('timeupdate', () => {
-        const percent = (video.currentTime / video.duration) * 100;
-        progressBar.style.width = percent + '%';
-        
-        // Форматирование времени
-        let mins = Math.floor(video.currentTime / 60);
-        let secs = Math.floor(video.currentTime % 60);
-        timeDisplay.innerText = `${mins}:${secs < 10 ? '0'+secs : secs}`;
+document.querySelectorAll('[data-tilt]').forEach(card=>{
+    card.addEventListener('mousemove',e=>{
+        const r=card.getBoundingClientRect();
+        const x=e.clientX-r.left-r.width/2;
+        const y=e.clientY-r.top-r.height/2;
+
+        card.style.transform=
+        `perspective(1000px) rotateY(${x/12}deg) rotateX(${-y/12}deg)`;
     });
 
-    // Логика клика (Play/Pause)
-    player.addEventListener('click', () => {
-        if (video.paused) {
-            video.play();
-            player.querySelector('.play-icon').style.display = 'none';
-        } else {
-            video.pause();
-            player.querySelector('.play-icon').style.display = 'block';
-        }
-    });
-
-    // Автоплей при наведении (как в первом варианте)
-    player.addEventListener('mouseenter', () => {
-        video.play();
-        player.querySelector('.play-icon').style.opacity = '0';
-    });
-    
-    player.addEventListener('mouseleave', () => {
-        video.pause();
-        player.querySelector('.play-icon').style.opacity = '1';
+    card.addEventListener('mouseleave',()=>{
+        card.style.transform='perspective(1000px) rotateY(0) rotateX(0)';
     });
 });
-    </script>
+
+document.querySelectorAll('.custom-player').forEach(player=>{
+    const video=player.querySelector('video');
+    const bar=player.querySelector('.progress-bar');
+    const time=player.querySelector('.time');
+
+    player.addEventListener('mouseenter',()=>{
+        video.play();
+    });
+
+    player.addEventListener('mouseleave',()=>{
+        video.pause();
+    });
+
+    player.addEventListener('click',()=>{
+        if(video.paused){
+            video.play();
+        }else{
+            video.pause();
+        }
+    });
+
+    video.addEventListener('timeupdate',()=>{
+        if(video.duration){
+            const percent=(video.currentTime/video.duration)*100;
+            bar.style.width=percent+'%';
+
+            const mins=Math.floor(video.currentTime/60);
+            const secs=Math.floor(video.currentTime%60);
+            time.textContent=`${mins}:${secs<10?'0'+secs:secs}`;
+        }
+    });
+});
+
+const skills=[
+    {name:'Монтаж',value:95},
+    {name:'Color',value:90},
+    {name:'Sound',value:85},
+    {name:'Shoot',value:88},
+    {name:'Story',value:92},
+    {name:'Motion',value:80}
+];
+
+const center=200;
+const radius=160;
+const step=(Math.PI*2)/skills.length;
+
+function point(angle,r){
+    return{
+        x:center+r*Math.cos(angle-Math.PI/2),
+        y:center+r*Math.sin(angle-Math.PI/2)
+    };
+}
+
+const axes=document.getElementById('axes');
+const polygon=document.getElementById('skillsShape');
+const points=document.getElementById('points');
+const labels=document.getElementById('labels');
+
+let poly=[];
+
+skills.forEach((skill,i)=>{
+    const angle=step*i;
+
+    const end=point(angle,radius);
+
+    const line=document.createElementNS('http://www.w3.org/2000/svg','line');
+    line.setAttribute('x1',center);
+    line.setAttribute('y1',center);
+    line.setAttribute('x2',end.x);
+    line.setAttribute('y2',end.y);
+    line.setAttribute('stroke','rgba(255,255,255,.1)');
+    axes.appendChild(line);
+
+    const p=point(angle,(skill.value/100)*radius);
+
+    poly.push(`${p.x},${p.y}`);
+
+    const circle=document.createElementNS('http://www.w3.org/2000/svg','circle');
+    circle.setAttribute('cx',p.x);
+    circle.setAttribute('cy',p.y);
+    circle.setAttribute('r',5);
+    circle.setAttribute('fill','#b19cd9');
+    circle.setAttribute('stroke','#fff');
+    points.appendChild(circle);
+
+    const label=point(angle,radius+35);
+
+    const txt=document.createElementNS('http://www.w3.org/2000/svg','text');
+    txt.setAttribute('x',label.x);
+    txt.setAttribute('y',label.y);
+    txt.setAttribute('fill','#fff');
+    txt.setAttribute('font-size','12');
+    txt.setAttribute('text-anchor','middle');
+    txt.setAttribute('font-family','Unbounded');
+    txt.textContent=skill.name.toUpperCase();
+
+    labels.appendChild(txt);
+});
+
+polygon.setAttribute('points',poly.join(' '));
+
+const radarObserver=new IntersectionObserver(entries=>{
+    entries.forEach(entry=>{
+        if(entry.isIntersecting){
+            document.getElementById('radarWrap').classList.add('visible');
+        }
+    });
+},{threshold:.3});
+
+radarObserver.observe(document.getElementById('radarWrap'));
+</script>
+
 </body>
 </html>
